@@ -16,7 +16,7 @@ public class StudentController {
     @Autowired
     private StudentRepository studentRepository;
 
-    @GetMapping("/students") // Đây chính là cái biển số nhà "/students"
+    @GetMapping("/api/students-json") // Đây chính là cái biển số nhà "/students"
     public String listStudents(Model model) {
         List<Student> list = studentRepository.findAll();
         model.addAttribute("students", list);
