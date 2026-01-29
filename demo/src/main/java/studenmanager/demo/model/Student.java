@@ -9,45 +9,73 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "students")
 public class Student {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id; 
+    
     private String name;
-    private int age;
+    
+    private Integer age; 
+    
     private String email;
-     // constructor, getter, setter
-    public Student(){
+
+    private String gender; // Biến giới tính
+
+    // Constructor mặc định (Bắt buộc)
+    public Student() {
     }
-    public Student(int id,String name, int age, String email){
+
+    // Constructor đầy đủ
+    public Student(Integer id, String name, Integer age, String email, String gender) {
         this.id = id;
         this.name = name;
         this.age = age;
         this.email = email;
+        this.gender = gender;
     }
-    public int getId(){
+
+    // --- GETTER và SETTER ---
+
+    public Integer getId() {
         return id;
     }
-    public  void setId(int id){
+
+    public void setId(Integer id) {
         this.id = id;
     }
-    public String getName(){
+
+    public String getName() {
         return name;
     }
-    public void setName(String name){
+
+    public void setName(String name) {
         this.name = name;
     }
-    public int getAge(){
+
+    public Integer getAge() {
         return age;
     }
-    public void setAge(int age){
+
+    public void setAge(Integer age) {
         this.age = age;
     }
-    public String getEmail(){
-        return  email;
+
+    public String getEmail() {
+        return email;
     }
-    public void setEmail(String email){
+
+    public void setEmail(String email) {
         this.email = email;
     }
+
+    // --- PHẦN BẠN ĐANG THIẾU/VIẾT SAI ---
+    
+    public String getGender() { // Trả về String, không phải Integer
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
 }
-
-
