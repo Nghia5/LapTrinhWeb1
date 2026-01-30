@@ -34,7 +34,7 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         
         // Mặc định đăng ký xong là USER thường
-        user.setRole("USER"); 
+        user.setRole("ADMIN"); 
         
         userRepository.save(user);
         return "redirect:/login"; // Đã sửa: bỏ "?success" để về trang login mặc định gọn hơn
