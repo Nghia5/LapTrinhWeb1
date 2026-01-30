@@ -33,16 +33,16 @@ public class AuthController {
         // Mã hóa mật khẩu trước khi lưu
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         
-        // Mặc định đăng ký xong là USER thường (muốn Admin thì sửa trong DB sau)
+        // Mặc định đăng ký xong là USER thường
         user.setRole("USER"); 
         
         userRepository.save(user);
-        return "redirect:/login?success"; // Chuyển về trang login
+        return "redirect:/login"; // Đã sửa: bỏ "?success" để về trang login mặc định gọn hơn
     }
-    
-    // Trang login (nếu chưa có controller riêng)
     @GetMapping("/login")
     public String login() {
         return "login";
     }
 }
+    // --- ĐÃ XÓA ĐOẠN @GetMapping("/login") Ở ĐÂY ---
+    // Lý do: Để Spring Security tự động hiển thị trang đăng nhập mặc định.

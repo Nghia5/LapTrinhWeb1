@@ -19,16 +19,26 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests((requests) -> requests
+                // Cho phép truy cập file tĩnh, trang đăng ký VÀ trang đăng nhập
                 .requestMatchers("/css/**", "/js/**", "/register", "/login").permitAll()
+                // Chỉ ADMIN mới được thêm/sửa/xóa sinh viên
                 .requestMatchers("/students/new", "/students/edit/**", "/students/delete/**", "/students/save").hasRole("ADMIN")
+                // Các request còn lại phải đăng nhập
                 .anyRequest().authenticated()
             )
             .formLogin((form) -> form
-                .loginPage("/login")
-                .defaultSuccessUrl("/students", true)
+                // QUAN TRỌNG: Thêm lại dòng này để dùng file login.html của bạn
+                .loginPage("/login")  
+                .loginProcessingUrl("/login") // Xử lý khi bấm nút Submit
+                .defaultSuccessUrl("/students", true) // Đăng nhập xong thì chuyển về đây
+                .failureUrl("/login?error=true") // Đăng nhập sai thì về lại login kèm lỗi
                 .permitAll()
             )
-            .logout((logout) -> logout.permitAll());
+            .logout((logout) -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout=true") // Đăng xuất xong về lại login
+                .permitAll()
+            );
 
         return http.build();
     }
@@ -39,13 +49,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    // 2. SỬA DÒNG NÀY: Thêm "UserDetailsService userDetailsService" vào trong ngoặc
     public AuthenticationManager authenticationManager(HttpSecurity http, UserDetailsService userDetailsService) throws Exception { 
         AuthenticationManagerBuilder authenticationManagerBuilder =
             http.getSharedObject(AuthenticationManagerBuilder.class);
         
         authenticationManagerBuilder
-            .userDetailsService(userDetailsService) // Bây giờ biến này đã có (lấy từ tham số ở trên), hết lỗi đỏ!
+            .userDetailsService(userDetailsService)
             .passwordEncoder(passwordEncoder());
         
         return authenticationManagerBuilder.build();
