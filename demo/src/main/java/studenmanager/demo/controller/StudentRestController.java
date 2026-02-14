@@ -2,6 +2,7 @@ package studenmanager.demo.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID; // 1. QUAN TRỌNG: Import thư viện UUID
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,44 +15,41 @@ import org.springframework.web.bind.annotation.RestController;
 import studenmanager.demo.model.Student;
 import studenmanager.demo.repository.StudentRepository;
 
-// 1. Dùng @RestController để Swagger nhận diện đây là API dữ liệu
 @RestController
-// 2. Định nghĩa đường dẫn bắt đầu là /api/students như trong ảnh
 @RequestMapping("/api/students") 
 public class StudentRestController {
 
     @Autowired
     private StudentRepository studentRepository;
 
-    // API 1: Lấy danh sách (GET /api/students)
+    // API 1: Lấy danh sách
     @GetMapping
     public List<Student> getAll() {
         return studentRepository.findAll();
     }
 
-    // API 2: Lấy chi tiết 1 sinh viên (GET /api/students/{id})
+    // API 2: Lấy chi tiết (SỬA LỖI TẠI ĐÂY)
     @GetMapping("/{id}")
-    public Optional<Student> getOne(@PathVariable Integer id) {
+    public Optional<Student> getOne(@PathVariable UUID id) { // Đổi Integer -> UUID
         return studentRepository.findById(id);
     }
 
-    // API 3: Thêm mới (POST /api/students)
+    // API 3: Thêm mới
     @PostMapping
     public Student create(@RequestBody Student student) {
         return studentRepository.save(student);
     }
 
-    // API 4: Cập nhật (POST /api/students/update/{id} - Giống ảnh bạn gửi)
-    // Lưu ý: Đúng chuẩn REST nên dùng @PutMapping, nhưng để giống ảnh mình dùng Post
+    // API 4: Cập nhật (SỬA LỖI TẠI ĐÂY)
     @PostMapping("/update/{id}")
-    public Student update(@PathVariable Integer id, @RequestBody Student student) {
-        student.setId(id); // Giả sử model có hàm setId
+    public Student update(@PathVariable UUID id, @RequestBody Student student) { // Đổi Integer -> UUID
+        student.setId(id); // Model Student phải có hàm setId nhận vào UUID
         return studentRepository.save(student);
     }
 
-    // API 5: Xóa (POST /api/students/delete/{id} - Giống ảnh bạn gửi)
+    // API 5: Xóa (SỬA LỖI TẠI ĐÂY)
     @PostMapping("/delete/{id}")
-    public String delete(@PathVariable Integer id) {
+    public String delete(@PathVariable UUID id) { // Đổi Integer -> UUID
         studentRepository.deleteById(id);
         return "Deleted student " + id;
     }

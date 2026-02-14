@@ -1,5 +1,8 @@
 package studenmanager.demo.model;
 
+import java.util.UUID;
+
+import jakarta.persistence.Column; // Import thư viện UUID
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,71 +14,39 @@ import jakarta.persistence.Table;
 public class Student {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id; 
+    @GeneratedValue(strategy = GenerationType.UUID) // Đổi sang UUID
+    private UUID id; // Đổi từ Integer sang UUID
     
+    @Column(name = "full_name") // Map với cột full_name trong SQL
     private String name;
     
     private Integer age; 
-    
     private String email;
+    private String gender;
 
-    private String gender; // Biến giới tính
+    // --- CÁC TRƯỜNG PHỤ TỪ FILE SQL (Nên thêm vào) ---
+    @Column(name = "is_active")
+    private Boolean isActive = true;
 
-    // Constructor mặc định (Bắt buộc)
-    public Student() {
-    }
+    // Constructor
+    public Student() {}
 
-    // Constructor đầy đủ
-    public Student(Integer id, String name, Integer age, String email, String gender) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
-        this.email = email;
-        this.gender = gender;
-    }
-
-    // --- GETTER và SETTER ---
-
-    public Integer getId() {
+    // Getter & Setter cho ID
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    // --- PHẦN BẠN ĐANG THIẾU/VIẾT SAI ---
     
-    public String getGender() { // Trả về String, không phải Integer
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
+    // ... Các getter setter khác giữ nguyên (chỉ đổi String gender như bạn đã sửa)
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public Integer getAge() { return age; }
+    public void setAge(Integer age) { this.age = age; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getGender() { return gender; }
+    public void setGender(String gender) { this.gender = gender; }
 }

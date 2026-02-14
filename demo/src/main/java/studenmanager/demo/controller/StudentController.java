@@ -1,6 +1,7 @@
 package studenmanager.demo.controller;
 
 import java.util.List;
+import java.util.UUID; // 1. QUAN TRỌNG: Phải import thư viện này
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,51 +22,48 @@ public class StudentController {
     private StudentRepository studentRepository;
 
     // 1. CHỨC NĂNG HIỂN THỊ DANH SÁCH & TÌM KIẾM
-    @GetMapping("/students") // Đã sửa lại đường dẫn cho khớp với HTML
+    @GetMapping("/students")
     public String listStudents(Model model, @RequestParam(value = "keyword", required = false) String keyword) {
         List<Student> list;
         
         if (keyword != null && !keyword.isEmpty()) {
-            // Nếu có từ khóa tìm kiếm -> Gọi hàm tìm kiếm bên Repository
-            // Lưu ý: Bạn cần thêm hàm này vào file StudentRepository interface nhé!
             list = studentRepository.findByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(keyword, keyword);
         } else {
-            // Nếu không tìm kiếm -> Lấy tất cả
             list = studentRepository.findAll();
         }
         
         model.addAttribute("students", list);
-        model.addAttribute("keyword", keyword); // Truyền lại từ khóa ra view để giữ lại trong ô input
-        return "students"; // Trả về file students.html
+        model.addAttribute("keyword", keyword);
+        return "students";
     }
 
     // 2. CHỨC NĂNG MỞ FORM THÊM MỚI
     @GetMapping("/students/new")
     public String showNewForm(Model model) {
         model.addAttribute("student", new Student());
-        return "student_form"; // Trả về file student_form.html (Bạn cần tạo file này)
+        return "student_form";
     }
 
-    // 3. CHỨC NĂNG LƯU (Dùng cho cả Thêm mới và Sửa)
+    // 3. CHỨC NĂNG LƯU
     @PostMapping("/students/save")
     public String saveStudent(@ModelAttribute("student") Student student) {
         studentRepository.save(student);
-        return "redirect:/students"; // Lưu xong thì quay về danh sách
+        return "redirect:/students";
     }
 
-    // 4. CHỨC NĂNG MỞ FORM SỬA (Lấy dữ liệu cũ lên)
+    // 4. CHỨC NĂNG MỞ FORM SỬA (ĐÃ SỬA LỖI TẠI ĐÂY)
     @GetMapping("/students/edit/{id}")
-    public String showEditForm(@PathVariable("id") Integer id, Model model) {
+    public String showEditForm(@PathVariable("id") UUID id, Model model) { // Đổi Integer -> UUID
         Student student = studentRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Invalid student Id:" + id));
         
         model.addAttribute("student", student);
-        return "student_form"; // Tái sử dụng form thêm mới
+        return "student_form";
     }
 
-    // 5. CHỨC NĂNG XÓA
+    // 5. CHỨC NĂNG XÓA (ĐÃ SỬA LỖI TẠI ĐÂY)
     @GetMapping("/students/delete/{id}")
-    public String deleteStudent(@PathVariable("id") Integer id) {
+    public String deleteStudent(@PathVariable("id") UUID id) { // Đổi Integer -> UUID
         studentRepository.deleteById(id);
         return "redirect:/students";
     }
