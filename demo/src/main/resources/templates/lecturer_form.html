@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
             <div class="card shadow">
@@ -34,6 +34,26 @@
                             <label class="form-label fw-bold">Họ và Tên</label>
                             <input type="text" class="form-control" th:field="*{fullName}" required 
                                    placeholder="Ví dụ: Nguyễn Văn A">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Khoa / Viện</label>
+                            <select class="form-select" th:field="*{department}" required>
+                                <option value="">-- Chọn Khoa --</option>
+                                <option th:each="dept : ${departments}" 
+                                        th:value="${dept.id}" 
+                                        th:text="${dept.name}"></option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Chức danh</label>
+                            <select class="form-select" th:field="*{position}" required>
+                                <option value="">-- Chọn Chức danh --</option>
+                                <option th:each="pos : ${positions}" 
+                                        th:value="${pos.id}" 
+                                        th:text="${pos.name}"></option>
+                            </select>
                         </div>
 
                         <div class="mb-3">

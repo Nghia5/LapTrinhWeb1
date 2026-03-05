@@ -1,51 +1,95 @@
 package studenmanager.demo.controller;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import studenmanager.demo.model.Lecturer;
 import studenmanager.demo.repository.LecturerRepository;
 
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 @RestController
-@RequestMapping("/api/lecturers") // Đổi đường dẫn API thành lecturers
+@RequestMapping("/api/v1/lecturers")
 public class LecturerRestController {
 
     @Autowired
     private LecturerRepository lecturerRepository;
 
-    // API 1: Lấy danh sách
+    // 1. GET /api/v1/lecturers - Lấy danh sách (Có lọc cơ bản)
     @GetMapping
-    public List<Lecturer> getAll() {
-        return lecturerRepository.findAll();
+    public ResponseEntity<List<Lecturer>> getAllLecturers(
+            @RequestParam(required = false) String keyword) {
+        
+        List<Lecturer> lecturers = lecturerRepository.findAll();
+        
+        // Lọc những người còn hoạt động (isActive = true)
+        List<Lecturer> activeLecturers = lecturers.stream()
+                .filter(l -> l.getIsActive() == null || l.getIsActive())
+                .collect(Collectors.toList());
+
+        // Nếu có keyword thì lọc theo tên hoặc email
+        if (keyword != null && !keyword.isEmpty()) {
+            activeLecturers = activeLecturers.stream()
+                    .filter(l -> l.getFullName().toLowerCase().contains(keyword.toLowerCase()) 
+                              || l.getEmail().toLowerCase().contains(keyword.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        
+        return ResponseEntity.ok(activeLecturers);
     }
 
-    // API 2: Lấy chi tiết
+    // 2. GET /api/v1/lecturers/{id} - Lấy chi tiết
     @GetMapping("/{id}")
-    public Optional<Lecturer> getOne(@PathVariable UUID id) {
-        return lecturerRepository.findById(id);
+    public ResponseEntity<Lecturer> getLecturerById(@PathVariable UUID id) {
+        return lecturerRepository.findById(id)
+                .filter(l -> l.getIsActive() == null || l.getIsActive())
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    // API 3: Thêm mới
+    // 3. POST /api/v1/lecturers - Tạo mới
     @PostMapping
-    public Lecturer create(@RequestBody Lecturer lecturer) {
-        return lecturerRepository.save(lecturer);
+    public ResponseEntity<Lecturer> createLecturer(@RequestBody Lecturer lecturer) {
+        lecturer.setId(null);
+        lecturer.setIsActive(true);
+        return ResponseEntity.ok(lecturerRepository.save(lecturer));
     }
 
-    // API 4: Cập nhật
-    @PostMapping("/update/{id}")
-    public Lecturer update(@PathVariable UUID id, @RequestBody Lecturer lecturer) {
-        lecturer.setId(id); // Đảm bảo ID đúng là UUID
-        return lecturerRepository.save(lecturer);
+    // 4. PUT /api/v1/lecturers/{id} - Cập nhật toàn bộ
+    @PutMapping("/{id}")
+    public ResponseEntity<Lecturer> updateLecturer(@PathVariable UUID id, @RequestBody Lecturer details) {
+        return lecturerRepository.findById(id).map(l -> {
+            l.setLecturerCode(details.getLecturerCode());
+            l.setFullName(details.getFullName());
+            l.setEmail(details.getEmail());
+            l.setPhone(details.getPhone());
+            l.setDepartment(details.getDepartment());
+            l.setPosition(details.getPosition());
+            return ResponseEntity.ok(lecturerRepository.save(l));
+        }).orElse(ResponseEntity.notFound().build());
     }
 
-    // API 5: Xóa
-    @PostMapping("/delete/{id}")
-    public String delete(@PathVariable UUID id) {
-        lecturerRepository.deleteById(id);
-        return "Deleted lecturer " + id;
+    // 5. PATCH /api/v1/lecturers/{id} - Cập nhật một phần (MỚI)
+    @PatchMapping("/{id}")
+    public ResponseEntity<Lecturer> patchLecturer(@PathVariable UUID id, @RequestBody Map<String, Object> updates) {
+        return lecturerRepository.findById(id).map(l -> {
+            if (updates.containsKey("fullName")) l.setFullName((String) updates.get("fullName"));
+            if (updates.containsKey("email")) l.setEmail((String) updates.get("email"));
+            if (updates.containsKey("phone")) l.setPhone((String) updates.get("phone"));
+            return ResponseEntity.ok(lecturerRepository.save(l));
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+    // 6. DELETE /api/v1/lecturers/{id} - Xóa mềm (is_active = 0)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteLecturer(@PathVariable UUID id) {
+        return lecturerRepository.findById(id).map(l -> {
+            l.setIsActive(false); // Xóa mềm theo yêu cầu nhóm
+            lecturerRepository.save(l);
+            return ResponseEntity.noContent().<Void>build();
+        }).orElse(ResponseEntity.notFound().build());
     }
 }

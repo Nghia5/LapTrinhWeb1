@@ -10,6 +10,12 @@ import studenmanager.demo.model.Lecturer;
 
 @Repository
 public interface LecturerRepository extends JpaRepository<Lecturer, UUID> {
-    // Hàm tìm kiếm theo Tên hoặc Email (Không phân biệt hoa thường)
-    List<Lecturer> findByFullNameContainingIgnoreCaseOrEmailContainingIgnoreCase(String name, String email);
+
+    // 1. Tìm kiếm theo Tên hoặc Email hoặc Mã giảng viên (Không phân biệt hoa thường)
+    // Dùng cho cả Giao diện Web và API
+    List<Lecturer> findByFullNameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrLecturerCodeContainingIgnoreCase(
+            String fullName, String email, String lecturerCode);
+
+    // 2. Tìm kiếm nâng cao kết hợp với trạng thái hoạt động (Nếu bạn dùng Xóa mềm)
+    List<Lecturer> findByIsActiveTrueAndFullNameContainingIgnoreCase(String fullName);
 }
