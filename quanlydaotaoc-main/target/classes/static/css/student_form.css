@@ -1,0 +1,42 @@
+/* --- CODE CŨ CỦA TRANG DANH SÁCH (Giữ nguyên) --- */
+body {
+    background-color: #f8f9fa;
+    padding-top: 50px;
+}
+
+.table-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+h1 {
+    color: #0d6efd;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.action-btn {
+    margin-right: 5px;
+}
+
+/* --- CODE MỚI THÊM CHO TRANG FORM (Thêm đoạn này vào) --- */
+.card {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: none;
+    border-radius: 10px;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+    padding: 20px;
+    background-color: #0d6efd; /* Màu xanh primary */
+    color: white;
+    text-align: center;
+}
+
+/* Tùy chỉnh nút bấm trong form cho đẹp hơn */
+.btn-form-action {
+    min-width: 120px;
+}
